@@ -17,7 +17,6 @@ namespace RestaurantOrderManagement.Configuration
             builder.HasMany(o => o.Items)
                 .WithOne(i => i.Order)
                 .HasForeignKey(i => i.OrderId);
-            // Seed data
             builder.HasData(
                 new Order
                 {

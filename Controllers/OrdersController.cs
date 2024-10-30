@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RestaurantOrderManagement.Contracts;
-using RestaurantOrderManagement.Data;
 using RestaurantOrderManagement.Dto;
 using RestaurantOrderManagement.Enum;
 using RestaurantOrderManagement.Model;
@@ -20,14 +18,17 @@ namespace RestaurantOrderManagement.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
+
         public OrdersController(IOrderRepository orderRepository, IMapper mapper)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
         }
+
         // GET: api/orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] OrderStatus? status, [FromQuery] int? tableNumber, [FromQuery] DateTime? date)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders([FromQuery] OrderStatus? status,
+            [FromQuery] int? tableNumber, [FromQuery] DateTime? date)
         {
             var orders = await _orderRepository.GetAllAsync<OrderDto>();
             if (status.HasValue)
@@ -38,6 +39,7 @@ namespace RestaurantOrderManagement.Controllers
                 orders = orders.Where(o => o.OrderTime.Date == date.Value.Date).ToList();
             return Ok(new { totalOrders = orders.Count, orders });
         }
+
         // GET: api/orders/5
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
@@ -47,8 +49,10 @@ namespace RestaurantOrderManagement.Controllers
             {
                 return NotFound();
             }
+
             return Ok(order);
         }
+
         // POST: api/orders
         [HttpPost]
         public async Task<ActionResult<OrderDto>> PostOrder(CreateOrderDto createOrderDto)
@@ -57,6 +61,7 @@ namespace RestaurantOrderManagement.Controllers
             {
                 return BadRequest("Invalid order details.");
             }
+
             var order = _mapper.Map<Order>(createOrderDto);
             order.Status = OrderStatus.New;
             order.OrderTime = DateTime.UtcNow;
@@ -64,6 +69,7 @@ namespace RestaurantOrderManagement.Controllers
             var createdOrder = await _orderRepository.AddAsync<Order, OrderDto>(order);
             return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
         }
+
         // PUT: api/orders/{id}/status
         [HttpPut("{id}/status")]
         public async Task<IActionResult> PutOrderStatus(int id, UpdateOrderStatusDto updateOrderStatusDto)
@@ -73,19 +79,23 @@ namespace RestaurantOrderManagement.Controllers
             {
                 return NotFound("Order not found.");
             }
+
             // Business rules for status update
             if (order.Status == OrderStatus.Delivered)
             {
                 return BadRequest("Cannot update delivered orders.");
             }
+
             if (updateOrderStatusDto.Status == OrderStatus.Preparing && order.Status != OrderStatus.New)
             {
                 return BadRequest("Status changes must be sequential.");
             }
+
             order.Status = updateOrderStatusDto.Status;
             await _orderRepository.UpdateAsync(order);
             return NoContent();
         }
+
         // DELETE: api/orders/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
@@ -95,9 +105,11 @@ namespace RestaurantOrderManagement.Controllers
             {
                 return NotFound();
             }
+
             await _orderRepository.DeleteAsync(id);
             return NoContent();
         }
+
         // GET: api/orders/daily-report
         [HttpGet("daily-report")]
         public async Task<ActionResult<DailyReportDto>> GetDailyReport([FromQuery] DateTime date)
@@ -122,5 +134,6 @@ namespace RestaurantOrderManagement.Controllers
             };
             return Ok(report);
         }
+
     }
 }
