@@ -8,13 +8,12 @@ namespace RestaurantOrderManagement.Configuration
     {
         public MapperConfig()
         {
+            CreateMap<Order, Order>().ReverseMap();
             CreateMap<Order, OrderDto>().ReverseMap();
             CreateMap<Order, CreateOrderDto>().ReverseMap();
             CreateMap<Order, UpdateOrderStatusDto>().ReverseMap();
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
             CreateMap<OrderItem, CreateOrderItemDto>().ReverseMap();
-            CreateMap<DailyReportDto, DailyReportDto>().ReverseMap();
-            CreateMap<DailyReportItemDto, DailyReportItemDto>().ReverseMap();
         }
     }
 }

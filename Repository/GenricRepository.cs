@@ -51,22 +51,6 @@ namespace RestaurantOrderManagement.Repository
         {
             return await _context.Set<T>().ToListAsync();
         }
-        //public async Task<PagedResult<TResult>> GetAllAsync<TResult>(QueryParameters queryParameters)
-        //{
-        //    var totalSize = await _context.Set<T>().CountAsync();
-        //    var items = await _context.Set<T>()
-        //        .Skip(queryParameters.StartIndex)
-        //        .Take(queryParameters.PageSize)
-        //        .ProjectTo<TResult>(_mapper.ConfigurationProvider)
-        //        .ToListAsync();
-        //    return new PagedResult<TResult>
-        //    {
-        //        Items = items,
-        //        PageNumber = queryParameters.PageNumber,
-        //        RecordNumber = queryParameters.PageSize,
-        //        TotalCount = totalSize
-        //    };
-        //}
         public async Task<List<TResult>> GetAllAsync<TResult>()
         {
             return await _context.Set<T>()
